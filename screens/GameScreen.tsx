@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground, Button } from 'react-native';
 import { db } from '../config/config';
 import { ref, push } from 'firebase/database';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const GameScreen = ({ navigation }: { navigation: any }) => {
+const GameScreen = ({ navigation } : { navigation: any }) => {
   const [playerPosition, setPlayerPosition] = useState({ x: screenWidth / 2 - 25, y: screenHeight - 100 });
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -107,46 +107,54 @@ const GameScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.scoreText}>Score: {score}</Text>
-      {!gameOver ? (
-        <View style={styles.gameContainer}>
-          <View style={[styles.player, { left: playerPosition.x, top: playerPosition.y }]} />
-          {invaders.map((invader, index) => (
-            <View key={index} style={[styles.invader, { left: invader.x, top: invader.y }]} />
-          ))}
-          {bullets.map((bullet, index) => (
-            <View key={index} style={[styles.bullet, { left: bullet.x, top: bullet.y }]} />
-          ))}
-          <TouchableOpacity style={[styles.button, styles.fireButton]} onPress={handleFire}>
-            <Text style={styles.buttonText}>Fire</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.moveLeftButton]} onPress={handleMoveLeft}>
-            <Text style={styles.buttonText}>Left</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.moveRightButton]} onPress={handleMoveRight}>
-            <Text style={styles.buttonText}>Right</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.gameOverContainer}>
-          <Text style={styles.gameOverText}>Game Over!</Text>
-          <Text style={styles.finalScoreText}>Final Score: {score}</Text>
-          <TouchableOpacity style={styles.playAgainButton} onPress={() => navigation.navigate('Game')}>
-            <Text>Play Again</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+    <ImageBackground
+      source={{ uri: 'https://uvn-brightspot.s3.amazonaws.com/assets/vixes/btg/curiosidades.batanga.com/files/5-cosas-sobre-el-espacio-y-la-materia-que-debemos-tener-claras.jpg' }}
+      style={styles.background}
+    >
+      <View style={styles.container}>
+        <Text style={styles.scoreText}>Score: {score}</Text>
+        {!gameOver ? (
+          <View style={styles.gameContainer}>
+            <View style={[styles.player, { left: playerPosition.x, top: playerPosition.y }]} />
+            {invaders.map((invader, index) => (
+              <View key={index} style={[styles.invader, { left: invader.x, top: invader.y }]} />
+            ))}
+            {bullets.map((bullet, index) => (
+              <View key={index} style={[styles.bullet, { left: bullet.x, top: bullet.y }]} />
+            ))}
+            <TouchableOpacity style={[styles.button, styles.fireButton]} onPress={handleFire}>
+              <Text style={styles.buttonText}>Fire</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, styles.moveLeftButton]} onPress={handleMoveLeft}>
+              <Text style={styles.buttonText}>Left</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, styles.moveRightButton]} onPress={handleMoveRight}>
+              <Text style={styles.buttonText}>Right</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.gameOverContainer}>
+      <Text style={styles.gameOverText}>Game Over!</Text>
+      <Text style={styles.finalScoreText}>Final Score: {score}</Text>
+      <Button title="Play Again" onPress={() => navigation.navigate('Register')} />
     </View>
+        )}
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   gameContainer: {
     position: 'relative',
@@ -156,6 +164,9 @@ const styles = StyleSheet.create({
   scoreText: {
     fontSize: 24,
     marginBottom: 20,
+    color: 'white',
+    fontWeight: 'bold',
+    marginTop: 100,
   },
   player: {
     position: 'absolute',
@@ -182,19 +193,20 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+    fontSize: 16,
   },
   fireButton: {
-    bottom: 150,
+    bottom: 100,
     left: screenWidth / 2 - 50,
     backgroundColor: 'green',
   },
   moveLeftButton: {
-    bottom: 150,
+    bottom: 100,
     left: 20,
     backgroundColor: 'lightblue',
   },
   moveRightButton: {
-    bottom: 150,
+    bottom: 100,
     right: 20,
     backgroundColor: 'lightblue',
   },
@@ -206,10 +218,12 @@ const styles = StyleSheet.create({
   gameOverText: {
     fontSize: 32,
     marginBottom: 20,
+    color: 'white',
   },
   finalScoreText: {
     fontSize: 24,
-    marginBottom: 20,
+    marginBottom: 25,
+    color: 'white',
   },
   playAgainButton: {
     backgroundColor: 'lightgreen',
