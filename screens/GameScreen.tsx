@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import { db } from '../config/config';
 import { ref, push } from 'firebase/database';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const GameScreen = ({ navigation } : { navigation: any }) => {
+const GameScreen = ({ navigation }) => {
   const [playerPosition, setPlayerPosition] = useState({ x: screenWidth / 2 - 25, y: screenHeight - 100 });
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -30,7 +30,7 @@ const GameScreen = ({ navigation } : { navigation: any }) => {
       setInvaders(prevInvaders =>
         prevInvaders.map(invader => ({
           ...invader,
-          x: invader.x + 5 * invaderDirection.current, // Adjust speed by changing the value from 10 to 5
+          x: invader.x + 5 * invaderDirection.current,
         }))
       );
 
@@ -43,7 +43,7 @@ const GameScreen = ({ navigation } : { navigation: any }) => {
           }))
         );
       }
-    }, 700); // Adjust interval from 500ms to 700ms to slow down invaders
+    }, 700);
 
     return () => clearInterval(interval);
   }, [invaders]);
@@ -134,10 +134,15 @@ const GameScreen = ({ navigation } : { navigation: any }) => {
           </View>
         ) : (
           <View style={styles.gameOverContainer}>
-      <Text style={styles.gameOverText}>Game Over!</Text>
-      <Text style={styles.finalScoreText}>Final Score: {score}</Text>
-      <Button title="Play Again" onPress={() => navigation.navigate('Register')} />
-    </View>
+            <Text style={styles.gameOverText}>Game Over!</Text>
+            <Text style={styles.finalScoreText}>Final Score: {score}</Text>
+            <TouchableOpacity
+              style={styles.playAgainButton}
+              onPress={() => navigation.navigate('Register')}
+            >
+              <Text style={styles.playAgainButtonText}>Play Again</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
     </ImageBackground>
@@ -187,25 +192,34 @@ const styles = StyleSheet.create({
     backgroundColor: 'yellow',
   },
   button: {
-    position: 'absolute',
-    padding: 10,
-    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#2196F3',
   },
   buttonText: {
-    color: 'white',
     fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   fireButton: {
+    position: 'absolute',
     bottom: 100,
     left: screenWidth / 2 - 50,
     backgroundColor: 'green',
   },
   moveLeftButton: {
+    position: 'absolute',
     bottom: 100,
     left: 20,
     backgroundColor: 'lightblue',
   },
   moveRightButton: {
+    position: 'absolute',
     bottom: 100,
     right: 20,
     backgroundColor: 'lightblue',
@@ -216,19 +230,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   gameOverText: {
-    fontSize: 32,
+    fontSize: 48,
     marginBottom: 20,
     color: 'white',
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
   finalScoreText: {
     fontSize: 24,
-    marginBottom: 25,
+    marginBottom: 30,
     color: 'white',
+    fontWeight: 'bold',
   },
   playAgainButton: {
-    backgroundColor: 'lightgreen',
+    marginTop: 20,
+    backgroundColor: '#4CAF50',
     padding: 10,
     borderRadius: 5,
+  },
+  playAgainButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
