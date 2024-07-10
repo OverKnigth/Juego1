@@ -29,13 +29,13 @@ const WelcomeScreen = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    resizeMode: 'cover', // Ajusta el tamaño de la imagen para cubrir toda la pantalla
+    resizeMode: 'cover',
   },
   overlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo negro semitransparente para que el contenido se vea bien
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   logo: {
     width: 300,
@@ -46,27 +46,27 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff', // Texto blanco para destacar en el fondo negro
+    color: '#fff', 
     marginBottom: 20,
   },
   button: {
-    backgroundColor: 'transparent', // Hacer el botón transparente
+    backgroundColor: 'transparent', 
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    borderColor: '#fff', // Borde blanco para que el botón se vea bien
+    borderColor: '#fff', 
     borderWidth: 1,
     marginTop: 20,
   },
   buttonText: {
-    color: '#fff', // Texto blanco para el botón
+    color: '#fff', 
     fontSize: 18,
     fontWeight: 'bold',
   },
   footer: {
     textAlign: 'center',
     fontSize: 15,
-    color: '#fff', // Texto blanco para el footer
+    color: '#fff',
     marginTop: 20,
     padding: 10,
   },

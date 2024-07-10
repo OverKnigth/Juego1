@@ -1,49 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert } from "react-native";
-import { ref, set, onValue } from "firebase/database";
-import { db } from "../config/config";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { db, auth } from "../config/config"; // Asegúrate de que 'auth' está siendo exportado correctamente desde tu config
+import WelcomeScreen from "./WelcomeScreen";
 
-const RegisterScreen = ({ navigation } : { navigation: any }) => {
+const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const [usuario, setUsuario] = useState('');
   const [email, setEmail] = useState('');
-  const [guardadoCorrectamente, setGuardadoCorrectamente] = useState(false);
+  const [password, setPassword] = useState('');
 
   const guardarUsuario = () => {
-    if (usuario && email) {
-      set(ref(db, 'users/' + usuario), {
-        usuario: usuario,
-        email: email
-      })
-      .then(() => {
-        Alert.alert("Mensaje", "¡Usuario registrado correctamente!");
-        setUsuario('');
-        setEmail('');
-        setGuardadoCorrectamente(true);
-        navigation.navigate('Game'); 
-      })
-      .catch(error => {
-        Alert.alert("Error", "Hubo un problema al registrar el usuario: " + error.message);
-      });
+    if (usuario && email && password) {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Usuario registrado correctamente
+          const user = userCredential.user;
+          Alert.alert("Mensaje", "¡Usuario registrado correctamente!");
+          setUsuario('');
+          setEmail('');
+          setPassword('');
+          navigation.navigate('Game');
+          console.log(user)
+        })
+        .catch(error => {
+          Alert.alert("Error", "Hubo un problema al registrar el usuario: " + error.message);
+        });
     } else {
-      Alert.alert("Advertencia", "Por favor ingresa un usuario y un email válidos.");
+      Alert.alert("Advertencia", "Por favor ingresa un usuario, email y contraseña válidos.");
     }
   };
-
-
-  useEffect(() => {
-    const nodoUsuario = ref(db, 'users/' + usuario);
-    const listener = onValue(nodoUsuario, (snapshot) => {
-      const usuarioGuardado = snapshot.val();
-      if (usuarioGuardado) {
-        console.log("Usuario guardado correctamente:", usuarioGuardado);
-      }
-    });
-
-    return () => {
-    
-      listener();
-    };
-  }, [usuario]);
 
   return (
     <ImageBackground source={{ uri: "https://e1.pxfuel.com/desktop-wallpaper/22/1001/desktop-wallpaper-galaxy-vertical-portrait.jpg" }} style={styles.background}>
@@ -55,7 +40,6 @@ const RegisterScreen = ({ navigation } : { navigation: any }) => {
             style={styles.input}
             placeholder="Ingresa tu usuario"
             placeholderTextColor='#434242f7'
-            value={usuario}
             onChangeText={text => setUsuario(text)}
           />
           <Text style={styles.textDos}>Email</Text>
@@ -63,12 +47,24 @@ const RegisterScreen = ({ navigation } : { navigation: any }) => {
             style={styles.input}
             placeholder="Ingresa tu email"
             placeholderTextColor='#434242f7'
-            value={email}
             onChangeText={text => setEmail(text)}
           />
-        <TouchableOpacity style={styles.btn} onPress={() => { guardarUsuario(); navigation.navigate('Game'); }}>
+          <Text style={styles.textDos}>Contraseña</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ingresa tu contraseña"
+            placeholderTextColor='#434242f7'
+            value={password}
+            onChangeText={text => setPassword(text)}
+            secureTextEntry
+          />
+          <TouchableOpacity style={styles.btn} onPress={guardarUsuario}>
             <Text style={styles.btntext}>REGISTRARSE Y JUGAR</Text>
           </TouchableOpacity>
+          <Text style={styles.textTres}>¿NO TIENES CUENTA? <TouchableOpacity style={styles.btn} >
+            <Text style={styles.btntext} onPress={() => navigation.navigate('Login')}>INICIAR SESION</Text>
+          </TouchableOpacity></Text>
+
         </View>
       </View>
     </ImageBackground>
@@ -76,6 +72,10 @@ const RegisterScreen = ({ navigation } : { navigation: any }) => {
 };
 
 const styles = StyleSheet.create({
+  textTres: {
+    padding: 20,
+    color: '#7a7a7a',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
