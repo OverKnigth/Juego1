@@ -5,7 +5,11 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import GameScreen from '../screens/GameScreen';
 import GameOverScreen from '../screens/GameOverScreen';
+<<<<<<< HEAD
 import LoginScreen from '../screens/LoginScreen';
+=======
+import DatosScreen from '../screens/DatosScreen';
+>>>>>>> 605e03bce29f13bdd75be8fcecdaa67b1bd56454
 
 const Stack = createStackNavigator();
 
@@ -17,7 +21,11 @@ const AppNavigator = () => {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Game" component={GameScreen} />
         <Stack.Screen name="GameOver" component={GameOverScreen} />
+<<<<<<< HEAD
         <Stack.Screen name="Login" component={LoginScreen} />
+=======
+        <Stack.Screen name="Datos" component={DatosScreen} />
+>>>>>>> 605e03bce29f13bdd75be8fcecdaa67b1bd56454
       </Stack.Navigator>
     </NavigationContainer>
   );

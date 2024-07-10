@@ -1,7 +1,7 @@
 import React from 'react'; 
 import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground } from 'react-native'; 
  
-const GameOverScreen = ({ navigation, score }: { navigation: any, score: number }) => { 
+export const GameOverScreen = ({ navigation, score }: { navigation: any; score: number }) => { 
   return ( 
     <ImageBackground 
       source={{ uri: 'https://i.pinimg.com/564x/c0/0c/16/c00c160278e73916660d1da3e2b34f03.jpg' }} // Reemplaza con la URL de tu imagen de galaxia 
@@ -104,4 +104,3 @@ const styles = StyleSheet.create({
    
 }); 
  
-export default GameOverScreen;
