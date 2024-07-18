@@ -1,26 +1,46 @@
-import React, { useState, useEffect } from "react";
-<<<<<<< HEAD
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert } from "react-native";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { db, auth } from "../config/config"; // Asegúrate de que 'auth' está siendo exportado correctamente desde tu config
-import WelcomeScreen from "./WelcomeScreen";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert, Image, Button } from "react-native";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import * as ImagePicker from 'expo-image-picker';
+import { auth, db, storage } from "../config/config"; // Importa db desde tu configuración de Firebase
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { push, ref as dbRef, set } from 'firebase/database'; // Importa push y ref desde database
+import { Audio } from "expo-av";
 
 const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const [usuario, setUsuario] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-=======
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert, Image } from "react-native";
-import { ref, set, onValue } from "firebase/database";
-import * as ImagePicker from 'expo-image-picker';
-import { db } from "../config/config";
+  const [image, setImage] = useState<string | null>(null);
 
-const RegisterScreen = ({ navigation } : any) => {
-  const [usuario, setUsuario] = useState('');
-  const [email, setEmail] = useState('');
-  const [image, setImage] = useState(null);
-  const [guardadoCorrectamente, setGuardadoCorrectamente] = useState(false);
->>>>>>> 605e03bce29f13bdd75be8fcecdaa67b1bd56454
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require('../assets/sound.mp3/register.mp3')
+    );
+    setSound(sound);
+
+    await sound.playAsync();
+  }
+
+  const stopSound = async () => {
+    if (sound) {
+      await sound.stopAsync();
+      await sound.unloadAsync();
+      setSound(null);
+    }
+  };
+
+  useEffect(() => {
+    playSound();
+
+    return () => {
+      stopSound();
+    };
+  }, []);
+
+  
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -31,9 +51,50 @@ const RegisterScreen = ({ navigation } : any) => {
     });
 
     if (!result.canceled) {
-      setImage(result.uri);
+      setImage(result.assets[0].uri); 
     }
   };
+
+  async function subir() {
+    if (usuario && email && password && image) {
+      const extension = image.split('.').pop(); // Obtiene la extensión del archivo
+      const fileName = `avatar_${Date.now()}.${extension}`; // Genera un nombre único para la imagen
+      const storageRef = ref(storage, `avatars/${fileName}`); // Define la referencia en el storage de Firebase con el nombre único
+
+      try {
+        const response = await fetch(image);
+        const blob = await response.blob();
+
+        await uploadBytes(storageRef, blob);
+        console.log('Imagen subida correctamente a Firebase Storage');
+
+        // Obtén la URL de descarga de la imagen subida
+        const downloadURL = await getDownloadURL(storageRef);
+
+        // Guarda los datos del usuario en la base de datos en tiempo real
+        const newUserRef = push(dbRef(db, 'usuarios'));
+        set(newUserRef, {
+          usuario: usuario,
+          email: email,
+          imageURL: downloadURL,
+          timestamp: new Date().getTime(),
+        });
+
+        Alert.alert("Éxito", "¡Usuario registrado correctamente!");
+        setUsuario('');
+        setEmail('');
+        setPassword('');
+        setImage(null);
+        navigation.navigate('Login');
+
+      } catch (error) {
+        console.error('Error al subir la imagen:', error);
+        Alert.alert("Error", "Hubo un problema al subir la imagen.");
+      }
+    } else {
+      Alert.alert("Advertencia", "Por favor completa todos los campos antes de registrar al usuario.");
+    }
+  }
 
   const takePhoto = async () => {
     let result = await ImagePicker.launchCameraAsync({
@@ -43,55 +104,29 @@ const RegisterScreen = ({ navigation } : any) => {
     });
 
     if (!result.canceled) {
-      setImage(result.uri);
+      setImage(result.assets[0].uri); 
     }
   };
 
   const guardarUsuario = () => {
-<<<<<<< HEAD
     if (usuario && email && password) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          // Usuario registrado correctamente
-          const user = userCredential.user;
-          Alert.alert("Mensaje", "¡Usuario registrado correctamente!");
-          setUsuario('');
-          setEmail('');
-          setPassword('');
-          navigation.navigate('Game');
-          console.log(user)
+          subir(); // Llama a la función subir para guardar la imagen y los datos del usuario
         })
         .catch(error => {
           Alert.alert("Error", "Hubo un problema al registrar el usuario: " + error.message);
         });
     } else {
       Alert.alert("Advertencia", "Por favor ingresa un usuario, email y contraseña válidos.");
-=======
-    if (usuario && email) {
-      set(ref(db, 'users/' + usuario), {
-        usuario: usuario,
-        email: email,
-        image: image
-      })
-      .then(() => {
-        Alert.alert("Mensaje", "¡Usuario registrado correctamente!");
-        setUsuario('');
-        setEmail('');
-        setImage(null);
-        setGuardadoCorrectamente(true);
-        navigation.navigate('Datos');
-      })
-      .catch(error => {
-        Alert.alert("Error", "Hubo un problema al registrar el usuario: " + error.message);
-      });
-    } else {
-      Alert.alert("Advertencia", "Por favor ingresa un usuario, un email válidos y una imagen.");
->>>>>>> 605e03bce29f13bdd75be8fcecdaa67b1bd56454
     }
   };
 
   return (
-    <ImageBackground source={{ uri: "https://e1.pxfuel.com/desktop-wallpaper/22/1001/desktop-wallpaper-galaxy-vertical-portrait.jpg" }} style={styles.background}>
+    <ImageBackground
+      source={{ uri: "https://e1.pxfuel.com/desktop-wallpaper/22/1001/desktop-wallpaper-galaxy-vertical-portrait.jpg" }}
+      style={styles.background}
+    >
       <View style={styles.container}>
         <View style={styles.containerdos}>
           <Text style={styles.text}>¡REGÍSTRATE Y DIVIÉRTETE!</Text>
@@ -109,7 +144,6 @@ const RegisterScreen = ({ navigation } : any) => {
             placeholderTextColor='#434242f7'
             onChangeText={text => setEmail(text)}
           />
-<<<<<<< HEAD
           <Text style={styles.textDos}>Contraseña</Text>
           <TextInput
             style={styles.input}
@@ -119,9 +153,6 @@ const RegisterScreen = ({ navigation } : any) => {
             onChangeText={text => setPassword(text)}
             secureTextEntry
           />
-          <TouchableOpacity style={styles.btn} onPress={guardarUsuario}>
-            <Text style={styles.btntext}>REGISTRARSE Y JUGAR</Text>
-=======
           <View style={styles.imageContainer}>
             <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
               <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
@@ -129,16 +160,17 @@ const RegisterScreen = ({ navigation } : any) => {
             <TouchableOpacity style={styles.imageButton} onPress={takePhoto}>
               <Text style={styles.imageButtonText}>Tomar Foto</Text>
             </TouchableOpacity>
+            <Button title='SUBIR IMAGEN' color={'green'} onPress={subir} />
           </View>
           {image && <Image source={{ uri: image }} style={styles.image} />}
-          <TouchableOpacity style={styles.btn} onPress={guardarUsuario}>
-            <Text style={styles.btntext}>REGISTRARSE</Text>
->>>>>>> 605e03bce29f13bdd75be8fcecdaa67b1bd56454
+          <TouchableOpacity style={styles.imageButton} onPress={guardarUsuario}>
+            <Text style={styles.btntext}>REGISTRARSE Y JUGAR</Text>
           </TouchableOpacity>
-          <Text style={styles.textTres}>¿NO TIENES CUENTA? <TouchableOpacity style={styles.btn} >
-            <Text style={styles.btntext} onPress={() => navigation.navigate('Login')}>INICIAR SESION</Text>
-          </TouchableOpacity></Text>
-
+        
+          <Text style={styles.textTres}>¿YA TIENES CUENTA?</Text>
+          <TouchableOpacity style={styles.imageButton} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.btntext}>INICIAR SESION</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ImageBackground>
@@ -146,10 +178,6 @@ const RegisterScreen = ({ navigation } : any) => {
 };
 
 const styles = StyleSheet.create({
-  textTres: {
-    padding: 20,
-    color: '#7a7a7a',
-  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -164,27 +192,21 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 22,
-    justifyContent: "center",
-    alignItems: "center",
+    color: 'white',
+    fontWeight: 'bold',
     marginVertical: 35,
-    color: "white",
-    fontWeight: "bold",
+    textAlign: 'center',
   },
   textDos: {
-    textAlign: "left",
-    color: "white",
     fontSize: 19,
+    color: 'white',
     marginVertical: 10,
+    textAlign: 'left',
   },
-  btn: {
-    backgroundColor: '#0f0f0ff7',
-    height: 40,
-    width: '80%',
-    borderRadius: 40,
-    marginVertical: 20,
-    borderWidth: 11,
-    alignItems: "center",
-    justifyContent: "center",
+  textTres: {
+    padding: 20,
+    color: '#7a7a7a',
+    textAlign: 'center',
   },
   btntext: {
     color: '#817e7ef7',
@@ -192,20 +214,19 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    width: "80%",
+    width: '80%',
     marginVertical: 10,
-    marginHorizontal: 15,
     borderRadius: 21,
     fontSize: 20,
     backgroundColor: '#1c1c1cf7',
     paddingHorizontal: 20,
     color: '#747272f7',
-    textAlign: "center",
+    textAlign: 'center',
   },
   background: {
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center"
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
   imageContainer: {
     flexDirection: 'row',
@@ -223,7 +244,7 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius:10,
     marginVertical: 10,
   },
 });

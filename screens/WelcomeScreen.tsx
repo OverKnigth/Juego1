@@ -1,11 +1,32 @@
-// screens/WelcomeScreen.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
+import { Audio } from 'expo-av';
 
-const WelcomeScreen = ({ navigation }: { navigation: any }) => {
+const WelcomeScreen = ({ navigation }: any) => {
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+       require('../assets/sound.mp3/Master.mp3')
+    );
+    setSound(sound);
+
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    playSound();
+
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, []);
+
   return (
     <ImageBackground 
-      source={{ uri: 'https://uvn-brightspot.s3.amazonaws.com/assets/vixes/btg/curiosidades.batanga.com/files/5-cosas-sobre-el-espacio-y-la-materia-que-debemos-tener-claras.jpg' }} 
+      source={{ uri: 'https://i.pinimg.com/564x/c0/0c/16/c00c160278e73916660d1da3e2b34f03.jpg' }} 
       style={styles.background}
     >
       <View style={styles.overlay}>
@@ -17,7 +38,10 @@ const WelcomeScreen = ({ navigation }: { navigation: any }) => {
         <Text style={styles.footer}>"Embárcate en una aventura galáctica y derrota a los invasores espaciales."</Text>
         <TouchableOpacity 
           style={styles.button} 
-          onPress={() => navigation.navigate('Register')}
+          onPress={() => {
+            sound?.unloadAsync();
+            navigation.navigate('Login');
+          }}
         >
           <Text style={styles.buttonText}>START GAME</Text>
         </TouchableOpacity>
@@ -35,7 +59,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   logo: {
     width: 300,
@@ -46,20 +70,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff', 
+    color: '#fff',
     marginBottom: 20,
   },
   button: {
-    backgroundColor: 'transparent', 
+    backgroundColor: 'transparent',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    borderColor: '#fff', 
+    borderColor: '#fff',
     borderWidth: 1,
     marginTop: 20,
   },
   buttonText: {
-    color: '#fff', 
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },

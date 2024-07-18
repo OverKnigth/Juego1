@@ -1,74 +1,142 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Button, Image } from "react-native";
-import { ref, onValue } from "firebase/database";
-import { db } from "../config/config";  // Asegúrate de que la ruta sea correcta
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from "react-native";
+import { auth } from "../config/config";
+import { onAuthStateChanged } from "firebase/auth";
+import { Audio } from "expo-av";
 
-const DatosScreen = ({ navigation } : any) => {
-  const [ultimoUsuario, setUltimoUsuario] = useState(null);
+const DatosScreen = ({ navigation }: any) => {
+
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require('../assets/sound.mp3/register.mp3')
+    );
+    setSound(sound);
+
+    await sound.playAsync();
+  }
+
+  const stopSound = async () => {
+    if (sound) {
+      await sound.stopAsync();
+      await sound.unloadAsync();
+      setSound(null);
+    }
+  };
 
   useEffect(() => {
-    const nodoUsuarios = ref(db, 'users');
-    const listener = onValue(nodoUsuarios, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const usuariosArray = Object.values(data);
-        setUltimoUsuario(usuariosArray[usuariosArray.length - 1]);
-      }
-    });
+    playSound();
 
     return () => {
-      listener();
+      stopSound();
     };
   }, []);
 
+
+    
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in.
+        setCurrentUser(user);
+      } else {
+        // No user is signed in.
+        setCurrentUser(null);
+      }
+    });
+
+    // Clean up subscription on unmount
+    return unsubscribe;
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Último Usuario Registrado</Text>
-      {ultimoUsuario ? (
-        <View style={styles.usuarioContainer}>
-          <Text style={styles.text}>Usuario: {ultimoUsuario.usuario}</Text>
-          <Text style={styles.text}>Email: {ultimoUsuario.email}</Text>
-          {ultimoUsuario.image && <Image source={{ uri: ultimoUsuario.image }} style={styles.image} />}
-        </View>
-      ) : (
-        <Text style={styles.text}>Cargando...</Text>
-      )}
-      <Button title="Ir al Juego" onPress={() => navigation.navigate('Game')} />
-    </View>
+    <ImageBackground
+      source={{ uri: 'https://i.pinimg.com/564x/c0/0c/16/c00c160278e73916660d1da3e2b34f03.jpg' }} // Reemplaza con la URL de tu imagen de galaxia
+      style={styles.background}
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>Datos del Usuario</Text>
+        {currentUser ? (
+          <View style={styles.usuarioContainer}>
+            <Text style={styles.text}>Email: {currentUser.email}</Text>
+          </View>
+        ) : (
+          <Text style={styles.text}>No hay usuario autenticado</Text>
+        )}
+        
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Game")}>
+          <Text style={styles.buttonText}>Iniciar a jugar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate("Menu")}>
+          <Text style={styles.buttonText}>Volver al Menú</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate("ModeSelection")}>
+          <Text style={styles.buttonText}>Volver Modo Seleccion</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#2e2e2ef7',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)', 
+    width: '100%',
+    padding: 16,
   },
   title: {
     fontSize: 22,
     fontWeight: "bold",
     color: "white",
     marginBottom: 20,
-    textAlign: "center",
   },
   usuarioContainer: {
-    marginBottom: 15,
-    padding: 10,
-    backgroundColor: '#1c1c1cf7',
-    borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
+    marginBottom: 20,
   },
   text: {
+    fontSize: 18,
+    color: "white",
+    marginBottom: 10,
+  },
+  button: {
+    backgroundColor: "#0f0f0f",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 20,
+    marginTop: 20,
+    borderWidth: 2,
+    borderColor: "white",
+  },
+  menuButton: {
+    backgroundColor: "#0f0f0f",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 20,
+    marginTop: 10,
+    borderWidth: 2,
+    borderColor: "white",
+  },
+  buttonText: {
     color: "white",
     fontSize: 18,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginTop: 10,
+    textAlign: "center",
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 30,
   },
 });
 

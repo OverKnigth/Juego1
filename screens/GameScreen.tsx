@@ -1,36 +1,75 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground, Image } from 'react-native';
 import { db } from '../config/config';
 import { ref, push } from 'firebase/database';
+import { Audio } from 'expo-av';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const GameScreen = ({ navigation }) => {
+const GameScreen = ({ navigation, route } : any) => {
+
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require('../assets/sound.mp3/juego.mp3')
+    );
+    setSound(sound);
+
+    await sound.playAsync();
+  }
+
+  const stopSound = async () => {
+    if (sound) {
+      await sound.stopAsync();
+      await sound.unloadAsync();
+      setSound(null);
+    }
+  };
+
+  useEffect(() => {
+    playSound();
+
+    return () => {
+      stopSound();
+    };
+  }, []);
+
+  
+  const { selectedMode } = route.params;
+
   const [playerPosition, setPlayerPosition] = useState({ x: screenWidth / 2 - 25, y: screenHeight - 100 });
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [bullets, setBullets] = useState([]);
   const [invaders, setInvaders] = useState(generateInvaders());
-  const invaderDirection = useRef(1); // 1 for right, -1 for left
+  const invaderDirection = useRef(1); // 1 para derecha, -1 para izquierda
+
+  const difficulties = {
+    easy: { invaderSpeed: 3, bulletFrequency: 2000 },
+    normal: { invaderSpeed: 5, bulletFrequency: 1000 },
+    hard: { invaderSpeed: 7, bulletFrequency: 500 },
+  };
+
+  const [currentDifficulty, setCurrentDifficulty] = useState(selectedMode || 'normal');
 
   function generateInvaders() {
     let invadersArray = [];
-    for (let i = 0; i < 5; i++) { // 5 rows of invaders
-      for (let j = 0; j < 7; j++) { // 7 invaders per row
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 7; j++) {
         invadersArray.push({ x: j * 60 + 10, y: i * 60 + 10 });
       }
     }
     return invadersArray;
   }
 
-  // Move invaders horizontally and change direction at the screen edge
   useEffect(() => {
     const interval = setInterval(() => {
       setInvaders(prevInvaders =>
         prevInvaders.map(invader => ({
           ...invader,
-          x: invader.x + 5 * invaderDirection.current,
+          x: invader.x + difficulties[currentDifficulty].invaderSpeed * invaderDirection.current,
         }))
       );
 
@@ -46,20 +85,18 @@ const GameScreen = ({ navigation }) => {
     }, 700);
 
     return () => clearInterval(interval);
-  }, [invaders]);
+  }, [invaders, currentDifficulty]);
 
-  // Move bullets
   useEffect(() => {
     const interval = setInterval(() => {
       setBullets(prevBullets =>
         prevBullets.map(bullet => ({ ...bullet, y: bullet.y - 10 })).filter(bullet => bullet.y > 0)
       );
-    }, 100);
+    }, difficulties[currentDifficulty].bulletFrequency);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentDifficulty]);
 
-  // Check for collisions
   useEffect(() => {
     bullets.forEach(bullet => {
       invaders.forEach(invader => {
@@ -79,6 +116,7 @@ const GameScreen = ({ navigation }) => {
     if (invaders.some(invader => invader.y >= screenHeight - 100)) {
       setGameOver(true);
       updateScoreInFirebase(score);
+      navigation.navigate('GameOver', { score }); // Asegúrate de que 'GameOver' es el nombre correcto
     }
   }, [bullets, invaders]);
 
@@ -112,35 +150,37 @@ const GameScreen = ({ navigation }) => {
       style={styles.background}
     >
       <View style={styles.container}>
-        <Text style={styles.scoreText}>Score: {score}</Text>
+        <Text style={styles.scoreText}>Puntuación: {score}</Text>
         {!gameOver ? (
           <View style={styles.gameContainer}>
-            <View style={[styles.player, { left: playerPosition.x, top: playerPosition.y }]} />
+            <Image source={require('../assets/nav1.png')} style={[styles.player, { left: playerPosition.x, top: playerPosition.y }]} />
             {invaders.map((invader, index) => (
-              <View key={index} style={[styles.invader, { left: invader.x, top: invader.y }]} />
+              <Image key={index} source={require('../assets/bass.png')} style={[styles.invader, { left: invader.x, top: invader.y }]} />
             ))}
             {bullets.map((bullet, index) => (
               <View key={index} style={[styles.bullet, { left: bullet.x, top: bullet.y }]} />
             ))}
-            <TouchableOpacity style={[styles.button, styles.fireButton]} onPress={handleFire}>
-              <Text style={styles.buttonText}>Fire</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.moveLeftButton]} onPress={handleMoveLeft}>
-              <Text style={styles.buttonText}>Left</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.moveRightButton]} onPress={handleMoveRight}>
-              <Text style={styles.buttonText}>Right</Text>
-            </TouchableOpacity>
+            <View style={styles.controlButtons}>
+              <TouchableOpacity style={[styles.button, styles.moveLeftButton]} onPress={handleMoveLeft}>
+                <Text style={styles.buttonText}>←</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, styles.fireButton]} onPress={handleFire}>
+                <Text style={styles.buttonText}>Disparar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, styles.moveRightButton]} onPress={handleMoveRight}>
+                <Text style={styles.buttonText}>→</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ) : (
           <View style={styles.gameOverContainer}>
-            <Text style={styles.gameOverText}>Game Over!</Text>
-            <Text style={styles.finalScoreText}>Final Score: {score}</Text>
+            <Text style={styles.gameOverText}>Juego Terminado!</Text>
+            <Text style={styles.finalScoreText}>Puntuación Final: {score}</Text>
             <TouchableOpacity
               style={styles.playAgainButton}
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('ModeSelection')}
             >
-              <Text style={styles.playAgainButtonText}>Play Again</Text>
+              <Text style={styles.playAgainButtonText}>Jugar de Nuevo</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -177,13 +217,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 50,
     height: 50,
-    backgroundColor: 'blue',
   },
   invader: {
     position: 'absolute',
     width: 50,
     height: 50,
-    backgroundColor: 'red',
   },
   bullet: {
     position: 'absolute',
@@ -191,14 +229,23 @@ const styles = StyleSheet.create({
     height: 20,
     backgroundColor: 'yellow',
   },
+  controlButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 100, // Ajusta esta propiedad para mover los botones más arriba
+    width: '100%',
+  },
   button: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 32,
+    paddingHorizontal: 20,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: '#2196F3',
+    backgroundColor: 'rgba(0,0,0,0.5)', 
+    marginHorizontal: 10,
   },
   buttonText: {
     fontSize: 16,
@@ -206,54 +253,33 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
-  fireButton: {
-    position: 'absolute',
-    bottom: 100,
-    left: screenWidth / 2 - 50,
-    backgroundColor: 'green',
-  },
-  moveLeftButton: {
-    position: 'absolute',
-    bottom: 100,
-    left: 20,
-    backgroundColor: 'lightblue',
-  },
-  moveRightButton: {
-    position: 'absolute',
-    bottom: 100,
-    right: 20,
-    backgroundColor: 'lightblue',
-  },
   gameOverContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   gameOverText: {
-    fontSize: 48,
-    marginBottom: 20,
-    color: 'white',
+    fontSize: 32,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
+    color: 'white',
+    marginBottom: 20,
   },
   finalScoreText: {
     fontSize: 24,
-    marginBottom: 30,
     color: 'white',
-    fontWeight: 'bold',
+    marginBottom: 20,
   },
   playAgainButton: {
-    marginTop: 20,
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    borderRadius: 5,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: 'rgba(0,0,0,0.5)', 
   },
   playAgainButtonText: {
+    fontSize: 16,
     color: 'white',
-    fontSize: 20,
     fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
 });
 
