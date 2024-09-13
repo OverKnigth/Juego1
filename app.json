@@ -18,13 +18,19 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/splashGalaxiar.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.overknigth.GameT1"
     },
     "web": {
       "favicon": "./assets/iconNave.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "baa9966b-cf58-44ce-b51f-9e672f98d2d2"
+      }
+    }
   }
 }
