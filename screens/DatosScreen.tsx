@@ -6,32 +6,32 @@ import { Audio } from "expo-av";
 
 const DatosScreen = ({ navigation }: any) => {
 
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  // const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-  async function playSound() {
-    const { sound } = await Audio.Sound.createAsync(
-      require('../assets/sound.mp3/register.mp3')
-    );
-    setSound(sound);
+  // async function playSound() {
+  //   const { sound } = await Audio.Sound.createAsync(
+  //     require('../assets/sound.mp3/register.mp3')
+  //   );
+  //   setSound(sound);
 
-    await sound.playAsync();
-  }
+  //   await sound.playAsync();
+  // }
 
-  const stopSound = async () => {
-    if (sound) {
-      await sound.stopAsync();
-      await sound.unloadAsync();
-      setSound(null);
-    }
-  };
+  // const stopSound = async () => {
+  //   if (sound) {
+  //     await sound.stopAsync();
+  //     await sound.unloadAsync();
+  //     setSound(null);
+  //   }
+  // };
 
-  useEffect(() => {
-    playSound();
+  // useEffect(() => {
+  //   playSound();
 
-    return () => {
-      stopSound();
-    };
-  }, []);
+  //   return () => {
+  //     stopSound();
+  //   };
+  // }, []);
 
 
     
@@ -58,7 +58,7 @@ const DatosScreen = ({ navigation }: any) => {
       style={styles.background}
     >
       <View style={styles.overlay}>
-        <Text style={styles.title}>Datos del Usuario</Text>
+        <Text style={styles.title}>Datos del Usuario:</Text>
         {currentUser ? (
           <View style={styles.usuarioContainer}>
             <Text style={styles.text}>Email: {currentUser.email}</Text>
@@ -71,10 +71,10 @@ const DatosScreen = ({ navigation }: any) => {
           <Text style={styles.buttonText}>Iniciar a jugar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate("Menu")}>
+        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate("Welcome")}>
           <Text style={styles.buttonText}>Volver al Menú</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate("ModeSelection")}>
+        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate("Select")}>
           <Text style={styles.buttonText}>Volver Modo Seleccion</Text>
         </TouchableOpacity>
       </View>

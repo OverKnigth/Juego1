@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
-import { Audio } from 'expo-av';
+import * as Font from 'expo-font';
 
 const WelcomeScreen = ({ navigation }: any) => {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  // const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-  async function playSound() {
-    const { sound } = await Audio.Sound.createAsync(
-       require('../assets/sound.mp3/Master.mp3')
-    );
-    setSound(sound);
+  // async function playSound() {
+  //   const { sound } = await Audio.Sound.createAsync(
+  //      require('../assets/sound.mp3/Master.mp3')
+  //   );
+  //   setSound(sound);
 
-    await sound.playAsync();
-  }
+  //   await sound.playAsync();
+  // }
 
-  useEffect(() => {
-    playSound();
+  // useEffect(() => {
+  //   playSound();
 
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (sound) {
+  //       sound.unloadAsync();
+  //     }
+  //   };
+  // }, []);
 
   return (
     <ImageBackground 
@@ -31,19 +31,19 @@ const WelcomeScreen = ({ navigation }: any) => {
     >
       <View style={styles.overlay}>
         <Image 
-          source={{ uri: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/11a10a01-ac23-4fea-ad5a-b51f53084159/d5qe2di-7968e77c-4c28-408e-874e-f5f7c0548ff2.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzExYTEwYTAxLWFjMjMtNGZlYS1hZDVhLWI1MWY1MzA4NDE1OVwvZDVxZTJkaS03OTY4ZTc3Yy00YzI4LTQwOGUtODc0ZS1mNWY3YzA1NDhmZjIucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.dX9Fx5j0okP10pXbab0ca7TbmT8ELfizG9CRzzZO-dI' }} 
+          source={require('../assets/logogal.png')}
           style={styles.logo} 
         />
-        <Text style={styles.title}>Welcome to Galaxian!</Text>
-        <Text style={styles.footer}>"Embárcate en una aventura galáctica y derrota a los invasores espaciales."</Text>
+        <Text style={styles.title}>¡BIENVENIDO!</Text>
+        <Text style={styles.footer}>"Embárcate junto a Luti en una aventura galáctica única y derrota a los invasores espaciales que quieren apropiarse del ITSQMET."</Text>
         <TouchableOpacity 
           style={styles.button} 
           onPress={() => {
-            sound?.unloadAsync();
+            //sound?.unloadAsync();
             navigation.navigate('Login');
           }}
         >
-          <Text style={styles.buttonText}>START GAME</Text>
+          <Text style={styles.buttonText}>JUGAR</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -62,16 +62,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   logo: {
-    width: 300,
-    height: 200,
-    marginBottom: 20,
-    resizeMode: 'contain', 
+    width: 400,
+    height: 300,
+    marginBottom: 30,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 20,
+    marginBottom: 4,
   },
   button: {
     backgroundColor: 'transparent',
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
     borderColor: '#fff',
-    borderWidth: 1,
+    borderWidth: 3,
     marginTop: 20,
   },
   buttonText: {
@@ -89,10 +88,11 @@ const styles = StyleSheet.create({
   },
   footer: {
     textAlign: 'center',
-    fontSize: 15,
+    fontSize: 20,
     color: '#fff',
     marginTop: 20,
     padding: 10,
+    marginBottom: 5,
   },
 });
 

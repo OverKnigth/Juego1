@@ -1,19 +1,20 @@
-// src/config/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
+import { getStorage } from 'firebase/storage'; // Importa Firebase Storage
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDExPOU41qzJlRuqpUoii_v6YdBH5SdXxI",
-  authDomain: "prueba-1c17e.firebaseapp.com",
-  projectId: "prueba-1c17e",
-  storageBucket: "prueba-1c17e.appspot.com",
-  messagingSenderId: "266323672085",
-  appId: "1:266323672085:web:af2bc709f4f9429654e21c"
+  apiKey: "AIzaSyClwjZxLs6bflIjxnXnPXwq7zEfDAN-_fA",
+  authDomain: "galaxi-86d0d.firebaseapp.com",
+  projectId: "galaxi-86d0d",
+  storageBucket: "galaxi-86d0d.appspot.com",
+  messagingSenderId: "406745054935",
+  appId: "1:406745054935:web:6091d982869b558ecc7a92",
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
+const storage = getStorage(app); // Inicializa el storage
 
-export {db,auth};
+export { db, auth, storage }; // Exporta el storage

@@ -13,34 +13,32 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const [password, setPassword] = useState('');
   const [image, setImage] = useState<string | null>(null);
 
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  // const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-  async function playSound() {
-    const { sound } = await Audio.Sound.createAsync(
-      require('../assets/sound.mp3/register.mp3')
-    );
-    setSound(sound);
+  // async function playSound() {
+  //   const { sound } = await Audio.Sound.createAsync(
+  //     require('../assets/sound.mp3/register.mp3')
+  //   );
+  //   setSound(sound);
 
-    await sound.playAsync();
-  }
+  //   await sound.playAsync();
+  // }
 
-  const stopSound = async () => {
-    if (sound) {
-      await sound.stopAsync();
-      await sound.unloadAsync();
-      setSound(null);
-    }
-  };
+  // const stopSound = async () => {
+  //   if (sound) {
+  //     await sound.stopAsync();
+  //     await sound.unloadAsync();
+  //     setSound(null);
+  //   }
+  // };
 
-  useEffect(() => {
-    playSound();
+  // useEffect(() => {
+  //   playSound();
 
-    return () => {
-      stopSound();
-    };
-  }, []);
-
-  
+  //   return () => {
+  //     stopSound();
+  //   };
+  // }, []);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -130,21 +128,21 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       <View style={styles.container}>
         <View style={styles.containerdos}>
           <Text style={styles.text}>¡REGÍSTRATE Y DIVIÉRTETE!</Text>
-          <Text style={styles.textDos}>Usuario</Text>
+          <Text style={styles.textDos}>Usuario:</Text>
           <TextInput
             style={styles.input}
             placeholder="Ingresa tu usuario"
             placeholderTextColor='#434242f7'
             onChangeText={text => setUsuario(text)}
           />
-          <Text style={styles.textDos}>Email</Text>
+          <Text style={styles.textDos}>Email:</Text>
           <TextInput
             style={styles.input}
             placeholder="Ingresa tu email"
             placeholderTextColor='#434242f7'
             onChangeText={text => setEmail(text)}
           />
-          <Text style={styles.textDos}>Contraseña</Text>
+          <Text style={styles.textDos}>Contraseña:</Text>
           <TextInput
             style={styles.input}
             placeholder="Ingresa tu contraseña"
@@ -160,8 +158,10 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
             <TouchableOpacity style={styles.imageButton} onPress={takePhoto}>
               <Text style={styles.imageButtonText}>Tomar Foto</Text>
             </TouchableOpacity>
-            <Button title='SUBIR IMAGEN' color={'green'} onPress={subir} />
           </View>
+          <TouchableOpacity style={styles.imageup} onPress={subir}>
+              <Text style={styles.imageUpText}>SUBIR IMAGEN</Text>
+            </TouchableOpacity>
           {image && <Image source={{ uri: image }} style={styles.image} />}
           <TouchableOpacity style={styles.imageButton} onPress={guardarUsuario}>
             <Text style={styles.btntext}>REGISTRARSE Y JUGAR</Text>
@@ -194,19 +194,32 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: 'white',
     fontWeight: 'bold',
-    marginVertical: 35,
+    marginVertical: 10,
     textAlign: 'center',
   },
+  imageup:{
+    backgroundColor: 'green',
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 15,
+    marginTop: 15,
+  },
+  imageUpText:{
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 13,
+  },
   textDos: {
-    fontSize: 19,
+    fontSize: 20,
     color: 'white',
     marginVertical: 10,
     textAlign: 'left',
   },
   textTres: {
     padding: 20,
-    color: '#7a7a7a',
+    color: 'white',
     textAlign: 'center',
+    fontSize: 18
   },
   btntext: {
     color: '#817e7ef7',
@@ -230,13 +243,14 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginVertical: 10,
   },
   imageButton: {
     backgroundColor: '#0f0f0ff7',
     padding: 10,
     borderRadius: 10,
+    marginHorizontal: 4,
   },
   imageButtonText: {
     color: '#817e7ef7',
@@ -245,7 +259,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius:10,
-    marginVertical: 10,
+    marginVertical: 15,
   },
 });
 

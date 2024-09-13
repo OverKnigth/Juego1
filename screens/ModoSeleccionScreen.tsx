@@ -1,35 +1,35 @@
 import { Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
 
 const ModeSelectionScreen = ({ navigation }: { navigation: any }) => {
 
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  // const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-  async function playSound() {
-    const { sound } = await Audio.Sound.createAsync(
-      require('../assets/sound.mp3/login.mp3')
-    );
-    setSound(sound);
+  // async function playSound() {
+  //   const { sound } = await Audio.Sound.createAsync(
+  //     require('../assets/sound.mp3/login.mp3')
+  //   );
+  //   setSound(sound);
 
-    await sound.playAsync();
-  }
+  //   await sound.playAsync();
+  // }
 
-  const stopSound = async () => {
-    if (sound) {
-      await sound.stopAsync();
-      await sound.unloadAsync();
-      setSound(null);
-    }
-  };
+  // const stopSound = async () => {
+  //   if (sound) {
+  //     await sound.stopAsync();
+  //     await sound.unloadAsync();
+  //     setSound(null);
+  //   }
+  // };
 
-  useEffect(() => {
-    playSound();
+  // useEffect(() => {
+  //   playSound();
 
-    return () => {
-      stopSound();
-    };
-  }, []);
+  //   return () => {
+  //     stopSound();
+  //   };
+  // }, []);
 
   
 
@@ -68,12 +68,15 @@ const ModeSelectionScreen = ({ navigation }: { navigation: any }) => {
           <TouchableOpacity style={styles.startButton} onPress={handleStartGame}>
             <Text style={styles.buttonText}>Empezar Juego</Text>
           </TouchableOpacity>
-        </View>
-        <View style={styles.bottomContainer}>
-          <Text style={styles.textodata}>Mas Información de Data</Text>
+          <Text style={styles.title}>Tus Datos:</Text>
           <TouchableOpacity style={styles.buttonData} onPress={() => navigation.navigate('Datos')}>
-            <Text style={styles.buttonText}>Data</Text>
+            <Text style={styles.buttonText}>Revisar</Text>
           </TouchableOpacity>
+
+          <Image source={require('../assets/cafelut.png')} style={styles.logo} />
+        <Text style={styles.patrotext}>Patrocinado por Luti Coffe</Text>
+        <Text style={styles.patrotext}>"Donde el café se convierte en arte."</Text>
+        <Text style={styles.copytext}>© 2023 Luti Coffe. Todos los derechos reservados.</Text>
         </View>
       </View>
     </ImageBackground>
@@ -88,6 +91,26 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+
+  logo: {
+    width: 100,
+    height: 140,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+
+  patrotext: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+
+  copytext: {
+    color: 'white',
+    fontSize: 15,
+    marginTop: 20,
+  },
+
   overlay: {
     flex: 1,
     justifyContent: 'center',
@@ -110,6 +133,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     color: 'white',
     fontWeight: 'bold',
+    marginTop: 30,
   },
   modeButton: {
     alignItems: 'center',
@@ -144,7 +168,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   textodata: {
-    fontSize: 18,
+    fontSize: 25,
     color: 'white',
     marginBottom: 10,
   },

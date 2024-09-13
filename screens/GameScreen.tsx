@@ -9,32 +9,32 @@ const screenHeight = Dimensions.get('window').height;
 
 const GameScreen = ({ navigation, route } : any) => {
 
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  // const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-  async function playSound() {
-    const { sound } = await Audio.Sound.createAsync(
-      require('../assets/sound.mp3/juego.mp3')
-    );
-    setSound(sound);
+  // async function playSound() {
+  //   const { sound } = await Audio.Sound.createAsync(
+  //     require('../assets/sound.mp3/juego.mp3')
+  //   );
+  //   setSound(sound);
 
-    await sound.playAsync();
-  }
+  //   await sound.playAsync();
+  // }
 
-  const stopSound = async () => {
-    if (sound) {
-      await sound.stopAsync();
-      await sound.unloadAsync();
-      setSound(null);
-    }
-  };
+  // const stopSound = async () => {
+  //   if (sound) {
+  //     await sound.stopAsync();
+  //     await sound.unloadAsync();
+  //     setSound(null);
+  //   }
+  // };
 
-  useEffect(() => {
-    playSound();
+  // useEffect(() => {
+  //   playSound();
 
-    return () => {
-      stopSound();
-    };
-  }, []);
+  //   return () => {
+  //     stopSound();
+  //   };
+  // }, []);
 
   
   const { selectedMode } = route.params;
@@ -153,9 +153,9 @@ const GameScreen = ({ navigation, route } : any) => {
         <Text style={styles.scoreText}>Puntuación: {score}</Text>
         {!gameOver ? (
           <View style={styles.gameContainer}>
-            <Image source={require('../assets/nav1.png')} style={[styles.player, { left: playerPosition.x, top: playerPosition.y }]} />
+            <Image source={require('../assets/navluts.png')} style={[styles.player, { left: playerPosition.x, top: playerPosition.y }]} />
             {invaders.map((invader, index) => (
-              <Image key={index} source={require('../assets/bass.png')} style={[styles.invader, { left: invader.x, top: invader.y }]} />
+              <Image key={index} source={require('../assets/aliens.png')} style={[styles.invader, { left: invader.x, top: invader.y }]} />
             ))}
             {bullets.map((bullet, index) => (
               <View key={index} style={[styles.bullet, { left: bullet.x, top: bullet.y }]} />
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   player: {
     position: 'absolute',
-    width: 50,
+    width: 100,
     height: 50,
   },
   invader: {

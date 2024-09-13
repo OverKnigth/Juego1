@@ -4,24 +4,24 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground } from
 
 export const GameOverScreen = ({ navigation, route } : any) => {
   const { score } = route.params;
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  // const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-  async function playSound() {
-    const { sound } = await Audio.Sound.createAsync(
-      require('../assets/sound.mp3/GameOver.mp3')
-    );
-    setSound(sound);
-    await sound.playAsync();  
-  }
+  // async function playSound() {
+  //   const { sound } = await Audio.Sound.createAsync(
+  //     require('../assets/sound.mp3/GameOver.mp3')
+  //   );
+  //   setSound(sound);
+  //   await sound.playAsync();  
+  // }
 
-  useEffect(() => {
-    playSound();
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   playSound();
+  //   return () => {
+  //     if (sound) {
+  //       sound.unloadAsync();
+  //     }
+  //   };
+  // }, []);
 
   return (
     <ImageBackground
@@ -29,33 +29,27 @@ export const GameOverScreen = ({ navigation, route } : any) => {
       style={styles.background}
     >
       <View style={styles.overlay}>
-        <Image
-          style={styles.logo}
-          source={{ uri: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/11a10a01-ac23-4fea-ad5a-b51f53084159/d5qe2di-7968e77c-4c28-408e-874e-f5f7c0548ff2.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzExYTEwYTAxLWFjMjMtNGZlYS1hZDVhLWI1MWY1MzA4NDE1OVwvZDVxZTJkaS03OTY4ZTc3Yy00YzI4LTQwOGUtODc0ZS1mNWY3YzA1NDhmZjIucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.dX9Fx5j0okP10pXbab0ca7TbmT8ELfizG9CRzzZO-dI' }}
-        />
-        <Text style={styles.scoreText}>Your Score: {score}</Text>
-        <Image
-          style={styles.gif}
-          source={{ uri: 'https://media.tenor.com/nuyIpGF-YOEAAAAj/game-over-edited-graphic.gif' }}
-        />
+      <Image source={require('../assets/logogals.png')} style={styles.logo} />
+        <Text style={styles.scoreText}>Tu puntuación: {score}</Text>
+        <Image source={require('../assets/gameov.gif')} style={styles.gif} />
 
         <TouchableOpacity
           style={[styles.button, styles.playAgainButton]}
-          onPress={() => navigation.navigate('ModeSelection')}
+          onPress={() => navigation.navigate('Select')}
         >
-          <Text style={styles.buttonText}>Play Again</Text>
+          <Text style={styles.buttonText}>Jugar de Nuevo</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.mainMenuButton]}
           onPress={() => navigation.navigate('Welcome')}
         >
-          <Text style={styles.buttonText}>Main Menu</Text>
+          <Text style={styles.buttonText}>Menú Principal</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.datosButton]}
           onPress={() => navigation.navigate('Datos')}
         >
-          <Text style={styles.buttonText}>Datos</Text>
+          <Text style={styles.buttonText}>Revisar Datos</Text>
         </TouchableOpacity>
         
       </View>
@@ -81,14 +75,13 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 300, 
-    height: 100, 
-    resizeMode: 'contain', 
+    height: 200, 
     marginBottom: 20,
   },
   gif: {
-    width: 200,
+    width: 300,
     height: 200,
-    marginBottom: 20,
+
   },
   button: {
     width: '80%',
